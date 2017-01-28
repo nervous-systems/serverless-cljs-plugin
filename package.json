@@ -1,0 +1,34 @@
+{
+  "name": "serverless-cljs-plugin",
+  "description": "A Serverless plugin for deploying Clojurescript functions",
+  "repository:": "nervous-systems/serverless-cljs-plugin",
+  "author": "Moe Aboulkheir",
+  "license": "Unlicense",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=4.0"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "package.json",
+    "serverless-cljs-plugin",
+    "index.js"
+  ],
+  "keywords": [
+    "serverless",
+    "plugin",
+    "clojure",
+    "clojurescript",
+    "aws",
+    "lambda",
+    "amazon",
+    "jvm",
+    "api gateway"
+  ],
+  "dependencies": {
+    "bluebird": "3.4.6",
+    "lodash": "4.17.2",
+    "mkdirp": "0.5.1"
+  }
+}
