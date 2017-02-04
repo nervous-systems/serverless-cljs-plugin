@@ -1,5 +1,7 @@
 # serverless-cljs-plugin
 
+[![npm version](https://badge.fury.io/js/serverless-cljs-plugin.svg)](https://badge.fury.io/js/serverless-cljs-plugin)
+
 A [Serverless](https://github.com/serverless/serverless) plugin which
 uses [cljs-lambda](https://github.com/nervous-systems/cljs-lambda) to package
 services written in [Clojurescript](https://clojurescript.org/).  At deployment

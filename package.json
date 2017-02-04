@@ -1,10 +1,13 @@
 {
   "name": "serverless-cljs-plugin",
   "description": "A Serverless plugin for deploying Clojurescript functions",
-  "repository:": "nervous-systems/serverless-cljs-plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nervous-systems/serverless-cljs-plugin.git"
+  },
   "author": "Moe Aboulkheir",
   "license": "Unlicense",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "node": ">=4.0"
   },
