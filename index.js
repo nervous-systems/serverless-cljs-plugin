@@ -66,7 +66,7 @@ const after_createDeploymentArtifacts = bluebird.coroutine(
     yield cljsLambdaBuild(serverless, opts);
 
     serverless.cli.log(`Returning artifact path ${serverless.service.__cljsArtifact}`);
-    return service.__cljsArtifact;
+    return serverless.service.__cljsArtifact;
   });
 
 class ServerlessPlugin {
