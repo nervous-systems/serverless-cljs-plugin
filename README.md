@@ -15,6 +15,8 @@ $ lein new serverless-cljs example
 Will generate an `example` directory containing a minimal `serverless.yml` and
 `project.clj` demonstrating this plugin's functionality.
 
+### [Guide to using the plugin.](https://nervous.io/clojurescript/lambda/2017/02/06/serverless-cljs/)
+
 ## Usage
 
 ```yaml
