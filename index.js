@@ -54,6 +54,9 @@ function cljsLambdaBuild(serverless, opts) {
   const cmd = (`lein update-in :cljs-lambda assoc :functions '${fns}' ` +
                `-- cljs-lambda build :output ${serverless.service.__cljsArtifact} ` +
                `:quiet`);
+  // TODO if it is a lumo function use our lumo script for compiling
+  // const cmd = (`lumo -c serverless-cljs-plugin -m lumo.build` +
+  //              `--zip-path ${serverless.service.__cljsArtifact}`);
 
   serverless.cli.log(`Executing "${cmd}"`);
   return exec(cmd);
