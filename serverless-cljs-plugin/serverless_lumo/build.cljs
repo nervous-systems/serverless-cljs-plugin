@@ -10,8 +10,15 @@
 (defn zip!
   "Create the zip in output-dir. Return a promise containing the path.
 
-  The dirs will be included in the zip, the compression level defaults
-  to 9."
+  The zip-opts map is:
+
+     {:dirs #{\"dir1\" \"dir2\"}
+      :files #{[\"path/to/file\" {:name \"file\"}]
+               \"another/file\"}}
+
+  Seqable :files entries are passed as parameters to the archiver.file
+  function, for details check:
+    https://archiverjs.com/docs/Archiver.html#file"
   [output-path zip-opts compiler-opts]
 
   (let [archiver      (archiver "zip" #js {:zlib {:level 9}})
@@ -24,11 +31,13 @@
                                    (js/console.warn (.-message err))
                                    (reject-fn err))))
        (.on archiver "error" reject-fn)
-
        (.pipe archiver output-stream)
-       (doseq [d (zip-opts :dirs)]
+       (doseq [d (:dirs zip-opts)]
          (.directory archiver d))
-       (.file archiver (zip-opts :index) #js {:name "index.js"})
+       (doseq [f (:files zip-opts)]
+         (if (string? f)
+           (.file archiver f)
+           (.apply (.-file archiver) archiver (clj->js (seq f)))))
        (.finalize archiver)))))
 
 (defn compile!
@@ -81,7 +90,7 @@
     (compile! (cljs-lambda-opts :source-paths) compiler)
     (zip! (opts :zip-path)
           {:dirs  #{(output-dir compiler) "node_modules"}
-           :index index}
+           :files #{[index {:name "index.js"}]}}
           compiler)))
 
 (def cli-option-map
