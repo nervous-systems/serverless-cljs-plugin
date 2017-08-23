@@ -1,5 +1,8 @@
 service: lumo-example
 
+custom:
+  cljsCompiler: lumo
+
 provider:
   name: aws
   runtime: nodejs4.3
