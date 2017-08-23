@@ -1,0 +1,12 @@
+service: lumo-example
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+
+functions:
+  example:
+    cljs: lumo-example.core/example
+
+plugins:
+  - serverless-cljs-plugin

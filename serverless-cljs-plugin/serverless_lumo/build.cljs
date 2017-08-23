@@ -1,10 +1,11 @@
-(ns lumo.build
+(ns serverless-lumo.build
   (:require fs path archiver
             [clojure.string :as str]
             [goog.string.format]
             [cljs.reader :as reader]
             [lumo.io :as io]
-            [lumo.build.api]))
+            [lumo.build.api]
+            [serverless-lumo.index :as index]))
 
 (defn zip!
   "Create the zip in output-dir. Return a promise containing the path.
@@ -23,8 +24,7 @@
        (.pipe archiver output-stream)
        (doseq [d (zip-opts :dirs)]
          (.directory archiver d))
-       (doseq [f (zip-opts :files)]
-         (.file archiver f))
+       (.file archiver (zip-opts :index) #js {:name "index.js"})
        (.finalize archiver)))))
 
 (defn compile!
@@ -37,11 +37,14 @@
    (apply lumo.build.api/inputs inputs)
    compiler-opts))
 
-(defn generate-index!
-  "Generate the necessary index.js and copy it to target-path, ready for zipping."
-  [target-path functions compiler-options]
-  ;; TODO
-  )
+(defn generate-index
+  "Generate the necessary index.js"
+  [opts compiler]
+  (index/generate-index (opts :functions) compiler))
+
+(defn write-index [content outpath]
+  (.writeFileSync fs outpath content)
+  outpath)
 
 (defn read-conf!
   "Read and return the configuration map."
@@ -61,13 +64,20 @@
                   :target        :nodejs
                   :optimizations :none}})
 
+(defn- output-dir [compiler]
+  (let [s (compiler :output-dir)]
+    (str/replace s #"/+$" "")))
+
 (defn build!
   "Build a project."
   [opts cljs-lambda-opts]
-  (let [compiler (cljs-lambda-opts :compiler)]
+  (let [compiler (cljs-lambda-opts :compiler)
+        index    (-> (generate-index opts compiler)
+                     (write-index (.resolve path (opts :zip-path) "../index.js")))]
     (compile! (cljs-lambda-opts :source-paths) compiler)
     (zip! (opts :zip-path)
-          {:dirs #{(compiler :output-dir) "node_modules"}}
+          {:dirs  #{(output-dir compiler) "node_modules"}
+           :index index}
           compiler)))
 
 (def cli-option-map
@@ -89,7 +99,6 @@
 (defn ^:export -main [& args]
   (let [opts (cli-options *command-line-args*)
         conf (read-conf!)]
-    (println opts)
     (build! opts (merge-with merge default-config (read-conf!)))))
 
 (set! *main-cli-fn* -main)
