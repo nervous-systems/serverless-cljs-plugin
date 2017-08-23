@@ -53,7 +53,7 @@
 (defn generate-index
   "Generate the necessary index.js"
   [opts compiler]
-  (index/generate-index (opts :functions) compiler))
+  (index/generate-index (:functions opts) compiler))
 
 (defn write-index [content outpath]
   (.writeFileSync fs outpath content)
@@ -78,17 +78,17 @@
                   :optimizations :none}})
 
 (defn- output-dir [compiler]
-  (let [s (compiler :output-dir)]
+  (let [s (:output-dir compiler)]
     (str/replace s #"/+$" "")))
 
 (defn build!
   "Build a project."
   [opts cljs-lambda-opts]
-  (let [compiler (cljs-lambda-opts :compiler)
+  (let [compiler (:compiler cljs-lambda-opts)
         index    (-> (generate-index opts compiler)
-                     (write-index (.resolve path (opts :zip-path) "../index.js")))]
-    (compile! (cljs-lambda-opts :source-paths) compiler)
-    (zip! (opts :zip-path)
+                     (write-index (.resolve path (:zip-path opts) "../index.js")))]
+    (compile! (:source-paths cljs-lambda-opts) compiler)
+    (zip! (:zip-path opts)
           {:dirs  #{(output-dir compiler) "node_modules"}
            :files #{[index {:name "index.js"}]}}
           compiler)))
