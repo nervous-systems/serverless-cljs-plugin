@@ -19,6 +19,10 @@
     (js/Promise.
      (fn [resolve-fn reject-fn]
        (.on output-stream "close" #(resolve-fn output-path))
+       (.on archiver "warning" (fn [err]
+                                 (if (= (.-code err) "ENOENT")
+                                   (js/console.warn (.-message err))
+                                   (reject-fn err))))
        (.on archiver "error" reject-fn)
 
        (.pipe archiver output-stream)
