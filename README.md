@@ -37,6 +37,35 @@ equivalent functionality).
 In the example above, there needn't be a corresponding entry for `echo` in
 `project.clj`.
 
+#### Lumo compiler
+
+Alternatively you can use the [Lumo](https://github.com/anmonteiro/lumo)
+[compiler](https://anmonteiro.com/2017/02/compiling-clojurescript-projects-without-the-jvm/).
+
+In order to enable it either pass the `--lumo` switch to either `deploy` or `package`:
+
+```shell
+serverless deploy --lumo
+```
+
+Or add the following to your `serverless.yml`:
+
+```yaml
+custom:
+  cljsCompiler: lumo
+```
+
+The source paths and compiler options will be read from `serverless-lumo.edn`:
+
+```clojure
+{:source-paths ["src"]
+ :compiler-options {:output-to     "out/my/artifact.js" ;; defaults to out/lambda.js
+                    :output-dir    "out/my"             ;; defaults to out
+                    :optimizations :simple              ;; defaults to :none
+                    :source-map    false                ;; defaults to false because of lumo bug #132
+                    ...other options...}}
+```
+
 ## License
 
 serverless-cljs-plugin is free and unencumbered public domain software. For more

@@ -52,8 +52,10 @@ function basepath(config, service, opts) {
 
 function cljsLambdaBuild(serverless, opts) {
   const fns = slsToCljsLambda(serverless.service.functions, opts);
+  const compiler = _.get(serverless.service, 'custom.cljsCompiler');
+
   let cmd;
-  if(opts.lumo) {
+  if(compiler == "lumo" || opts.lumo) {
     cmd = (`lumo -c ${path.resolve(__dirname, 'serverless-cljs-plugin')} ` +
            `-m serverless-lumo.build ` +
            `--zip-path ${serverless.service.__cljsArtifact} ` +
