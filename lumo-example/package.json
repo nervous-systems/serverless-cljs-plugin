@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "serverless-cljs-plugin": "0.2.0-alpha.2"
+    "serverless-cljs-plugin": "0.2.0"
   }
 }
