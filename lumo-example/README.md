@@ -1,3 +1,3 @@
 # lumo-example
 
-Pass `--lumo` to serverless `package` or `deploy`.
+Assuming a local installation of `lumo`, run `serverless package` or `serverless deploy`.
