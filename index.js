@@ -2,6 +2,7 @@
 
 const bluebird = require('bluebird');
 const _        = require('lodash');
+const path     = require('path');
 
 const munge    = require('./serverless-cljs-plugin/munge');
 const mkdirp   = bluebird.promisify(require('mkdirp'));
@@ -51,9 +52,19 @@ function basepath(config, service, opts) {
 
 function cljsLambdaBuild(serverless, opts) {
   const fns = slsToCljsLambda(serverless.service.functions, opts);
-  const cmd = (`lein update-in :cljs-lambda assoc :functions '${fns}' ` +
-               `-- cljs-lambda build :output ${serverless.service.__cljsArtifact} ` +
-               `:quiet`);
+  const compiler = _.get(serverless.service, 'custom.cljsCompiler');
+
+  let cmd;
+  if(compiler == "lumo" || opts.lumo) {
+    cmd = (`lumo -c ${path.resolve(__dirname, 'serverless-cljs-plugin')} ` +
+           `-m serverless-lumo.build ` +
+           `--zip-path ${serverless.service.__cljsArtifact} ` +
+           `--functions '${fns}'`);
+  } else {
+    cmd = (`lein update-in :cljs-lambda assoc :functions '${fns}' ` +
+           `-- cljs-lambda build :output ${serverless.service.__cljsArtifact} ` +
+           `:quiet`);
+  }
 
   serverless.cli.log(`Executing "${cmd}"`);
   return exec(cmd);

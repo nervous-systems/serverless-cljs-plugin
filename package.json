@@ -7,7 +7,7 @@
   },
   "author": "Moe Aboulkheir",
   "license": "Unlicense",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "engines": {
     "node": ">=4.0"
   },
@@ -30,8 +30,10 @@
     "api gateway"
   ],
   "dependencies": {
+    "archiver": "2.0.0",
     "bluebird": "3.4.6",
     "lodash": "4.17.2",
-    "mkdirp": "0.5.1"
+    "mkdirp": "0.5.1",
+    "mustache": "2.3.0"
   }
 }
