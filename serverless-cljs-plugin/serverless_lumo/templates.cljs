@@ -24,16 +24,7 @@ exports.{{export}} = __CLJS_LAMBDA_NS_ROOT.{{js-name}};
 {{/function}}
 {{/module}}")
 
-(def template-advanced
-  "require(\"./{{{output-to}}}\");
-
-{{#module}}
-{{#function}}
-exports.{{export}} = {{js-name}};
-{{/function}}
-{{/module}}")
-
 (def templates
   {:none     template-none
    :simple   template-simple
-   :advanced template-advanced})
+   :advanced template-simple})
