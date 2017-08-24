@@ -3,10 +3,11 @@
 [![npm version](https://badge.fury.io/js/serverless-cljs-plugin.svg)](https://badge.fury.io/js/serverless-cljs-plugin)
 
 A [Serverless](https://github.com/serverless/serverless) plugin which
-uses [cljs-lambda](https://github.com/nervous-systems/cljs-lambda) to package
-services written in [Clojurescript](https://clojurescript.org/).  At deployment
-time, it uses [Leiningen](https://leiningen.org) to start a JVM in which your
-functions are compiled to Javascript.
+uses lein/[cljs-lambda](https://github.com/nervous-systems/cljs-lambda) (or,
+optionally [Lumo](https://github.com/anmonteiro/lumo)) to package services
+written in [Clojurescript](https://clojurescript.org/).
+
+## JVM Template
 
 ``` shell
 $ lein new serverless-cljs example
@@ -15,7 +16,7 @@ $ lein new serverless-cljs example
 Will generate an `example` directory containing a minimal `serverless.yml` and
 `project.clj` demonstrating this plugin's functionality.
 
-### [Guide to using the plugin.](https://nervous.io/clojurescript/lambda/2017/02/06/serverless-cljs/)
+### [Guide to using the plugin on the JVM.](https://nervous.io/clojurescript/lambda/2017/02/06/serverless-cljs/)
 
 ## Usage
 
@@ -37,15 +38,15 @@ equivalent functionality).
 In the example above, there needn't be a corresponding entry for `echo` in
 `project.clj`.
 
-#### Lumo compiler
+## Lumo
 
 Alternatively you can use the [Lumo](https://github.com/anmonteiro/lumo)
 [compiler](https://anmonteiro.com/2017/02/compiling-clojurescript-projects-without-the-jvm/).
 
-In order to enable it either pass the `--lumo` switch to either `deploy` or `package`:
+In order to enable it, pass the `--lumo` switch to either `deploy` or `package`:
 
 ```shell
-serverless deploy --lumo
+$ serverless deploy --lumo
 ```
 
 Or add the following to your `serverless.yml`:
@@ -55,15 +56,16 @@ custom:
   cljsCompiler: lumo
 ```
 
-The source paths and compiler options will be read from `serverless-lumo.edn`:
+The source paths and compiler options will be read from the optional file
+`serverless-lumo.edn`.  Below are the defaults:
 
 ```clojure
 {:source-paths ["src"]
- :compiler-options {:output-to     "out/my/artifact.js" ;; defaults to out/lambda.js
-                    :output-dir    "out/my"             ;; defaults to out
-                    :optimizations :simple              ;; defaults to :none
-                    :source-map    false                ;; defaults to false because of lumo bug #132
-                    ...other options...}}
+ :compiler     {:output-to     "out/lambda.js"
+                :output-dir    "out"
+                :source-map    false ;; lumo bug #132
+                :target        :nodejs
+                :optimizations :none}}
 ```
 
 ## License
