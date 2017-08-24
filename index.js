@@ -96,7 +96,7 @@ class ServerlessPlugin {
       null, serverless, opts);
 
     this.hooks = {
-      'after:deploy:createDeploymentArtifacts': buildAndMerge,
+      'after:package:createDeploymentArtifacts': buildAndMerge,
       'after:deploy:function:packageFunction': buildAndMerge
     };
   }
