@@ -1,5 +1,6 @@
 (ns serverless-lumo.build
   (:require fs path archiver
+            [lumo.core]
             [clojure.string :as str]
             [goog.string.format]
             [cljs.reader :as reader]
@@ -109,8 +110,14 @@
                 k (cli-option-map k k)]]
       [k (parse-option k v)])))
 
+(defn cmd-line-args []
+  (if-let [args cljs.core/*command-line-args*] ;; for lumo > 1.7.0
+    args
+    (when-let [args lumo.core/*command-line-args*] ;; for lumo <= 1.7.0
+      args)))
+
 (defn ^:export -main [& args]
-  (let [opts (cli-options *command-line-args*)
+  (let [opts (cli-options (cmd-line-args))
         conf (read-conf!)]
     (build! opts (merge-with merge default-config (read-conf!)))))
 
