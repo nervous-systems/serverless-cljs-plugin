@@ -116,9 +116,16 @@
     (when-let [args lumo.core/*command-line-args*] ;; for lumo <= 1.7.0
       args)))
 
+(defn- merge-maps [x y]
+  (merge-with
+   (fn [x y]
+     (if (map? x)
+       (merge-maps x y)
+       y))
+   x y))
+
 (defn ^:export -main [& args]
-  (let [opts (cli-options (cmd-line-args))
-        conf (read-conf!)]
-    (build! opts (merge-with merge default-config (read-conf!)))))
+  (let [opts (cli-options (cmd-line-args))]
+    (build! opts (merge-maps default-config (read-conf!)))))
 
 (set! *main-cli-fn* -main)
