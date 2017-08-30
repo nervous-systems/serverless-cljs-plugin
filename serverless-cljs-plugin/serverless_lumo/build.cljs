@@ -1,11 +1,11 @@
 (ns serverless-lumo.build
   (:require fs path archiver
-            [lumo.core]
             [clojure.string :as str]
-            [goog.string.format]
             [cljs.reader :as reader]
-            [lumo.io :as io]
             [lumo.build.api]
+            [lumo.classpath :as classpath]
+            [lumo.core]
+            [lumo.io :as io]
             [serverless-lumo.index :as index]))
 
 (defn zip!
@@ -47,6 +47,7 @@
   (js/console.info
    "Invoking the Lumo compiler w/ inputs"
    (.stringify js/JSON (clj->js inputs)))
+  (run! classpath/add! inputs)
   (lumo.build.api/build
    (apply lumo.build.api/inputs inputs)
    compiler-opts))
