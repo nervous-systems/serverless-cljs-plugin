@@ -68,6 +68,12 @@ The source paths and compiler options will be read from the optional file
                 :optimizations :none}}
 ```
 
+Note that the `lumo` build will need to create an `index.js` file relative to
+`:output-dir`. The default path will end up into the project root, overriding
+in case. This file should be considered managed by `serverless-cljs-plugin` and
+enables the use of other plugins that require it, like
+[`serverless-offline`](https://github.com/dherault/serverless-offline).
+
 ## License
 
 serverless-cljs-plugin is free and unencumbered public domain software. For more

@@ -86,12 +86,13 @@
 (defn build!
   "Build a project."
   [opts cljs-lambda-opts]
-  (let [compiler (:compiler cljs-lambda-opts)
-        index    (-> (generate-index opts compiler)
-                     (write-index (.resolve path (:zip-path opts) "../index.js")))]
+  (let [compiler   (:compiler cljs-lambda-opts)
+        output-dir (output-dir compiler)
+        index      (-> (generate-index opts compiler)
+                       (write-index (.resolve path output-dir "../index.js")))]
     (compile! (:source-paths cljs-lambda-opts) compiler)
     (zip! (:zip-path opts)
-          {:dirs  #{(output-dir compiler) "node_modules"}
+          {:dirs  #{output-dir "node_modules"}
            :files #{[index {:name "index.js"}]}}
           compiler)))
 
