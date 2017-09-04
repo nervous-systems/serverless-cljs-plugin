@@ -53,13 +53,15 @@ function basepath(config, service, opts) {
 function cljsLambdaBuild(serverless, opts) {
   const fns = slsToCljsLambda(serverless.service.functions, opts);
   const compiler = _.get(serverless.service, 'custom.cljsCompiler');
+  const index = _.get(serverless.service, 'custom.cljsIndex');
 
   let cmd;
   if(compiler == "lumo" || opts.lumo) {
     cmd = (`lumo -c ${path.resolve(__dirname, 'serverless-cljs-plugin')} ` +
            `-m serverless-lumo.build ` +
            `--zip-path ${serverless.service.__cljsArtifact} ` +
-           `--functions '${fns}'`);
+           `--functions '${fns}' ` +
+           `--index ${_.defaultTo(opts.index || index, false)}`);
   } else {
     cmd = (`lein update-in :cljs-lambda assoc :functions '${fns}' ` +
            `-- cljs-lambda build :output ${serverless.service.__cljsArtifact} ` +
