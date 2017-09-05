@@ -15,7 +15,11 @@
        {:export  (export-name f)
         :js-name (str (munge ns) "." (munge (name f)))})}))
 
-(defn- generate-index [fns compiler]
+(defn write-index! [content outpath]
+  (.writeFileSync fs outpath content)
+  outpath)
+
+(defn generate-index [fns compiler]
   (.render
    mustache
    (templates (compiler :optimizations))

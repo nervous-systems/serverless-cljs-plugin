@@ -68,6 +68,21 @@ The source paths and compiler options will be read from the optional file
                 :optimizations :none}}
 ```
 
+If `package` is called with `--index` or the following is added to
+`serverless.yml`:
+
+```yaml
+custom:
+  cljsIndex: true
+```
+
+A custom `index.js` will be materialized in `:output-dir`'s parent folder. This
+file should be thought as managed by `serverless-cljs-plugin` and can be useful
+for some plugins (e.g.: [`serverless-offline`](https://github.com/dherault/serverless-offline)).
+
+_Note_: with the defaults above `index.js` will be saved, overwriting without
+warning, in the project root (the parent dir of `out`).
+
 ## License
 
 serverless-cljs-plugin is free and unencumbered public domain software. For more
