@@ -17,9 +17,9 @@
       :files #{[\"path/to/file\" {:name \"file\"}]
                \"another/file\"}}
 
-  Seqable :files entries are passed as parameters to the archiver.file
-  function, for details check:
-    https://archiverjs.com/docs/Archiver.html#file"
+  Seqable :files entries are passed as parameters to the archiver's
+  .file function, for details check:
+    - https://archiverjs.com/docs/Archiver.html#file"
   [output-path zip-opts compiler-opts]
 
   (let [archiver      (archiver "zip" #js {:zlib {:level 9}})
