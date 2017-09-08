@@ -85,17 +85,18 @@ warning, in the project root (the parent dir of `out`).
 
 ### Configuration
 
-If a `custom.lumo` map is specified, `cljsCompiler` is not required.
-Example configuration:
+As an alternative to `cljsCompiler: lumo`, `cljsCompiler.lumo` may be specified
+as a map of compiler options:
 
-``` yml
+```yml
 custom:
-  lumo:
-    dependencies:
-      - andare:0.7.0
-    classpath:
-      - /tmp/
-    localRepo: /xyz
+  cljsCompiler:
+    lumo:
+      dependencies:
+        - andare:0.7.0
+      classpath:
+        - /tmp/
+      localRepo: /xyz
 ```
 
 ## License
