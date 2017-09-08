@@ -86,7 +86,7 @@ warning, in the project root (the parent dir of `out`).
 ### Configuration
 
 As an alternative to `cljsCompiler: lumo`, `cljsCompiler.lumo` may be specified
-as a map of compiler options:
+as a map of options.  Currently supported:
 
 ```yml
 custom:
