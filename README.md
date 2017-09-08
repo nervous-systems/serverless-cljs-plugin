@@ -83,6 +83,21 @@ for some plugins (e.g.: [`serverless-offline`](https://github.com/dherault/serve
 _Note_: with the defaults above `index.js` will be saved, overwriting without
 warning, in the project root (the parent dir of `out`).
 
+### Configuration
+
+If a `custom.lumo` map is specified, `cljsCompiler` is not required.
+Example configuration:
+
+``` yml
+custom:
+  lumo:
+    dependencies:
+      - andare:0.7.0
+    classpath:
+      - /tmp/
+    localRepo: /xyz
+```
+
 ## License
 
 serverless-cljs-plugin is free and unencumbered public domain software. For more

@@ -86,14 +86,38 @@ const applyZipExclude = bluebird.coroutine(
     }
   });
 
+function lumoClasspath(lumo) {
+  if(lumo.classpath) {
+    const cp = _.isString(lumo.classpath) ? lumo.classpath : lumo.classpath.join(':');
+    return `--classpath ${cp}`;
+  }
+}
+
+function lumoDependencies(lumo) {
+  if(lumo.dependencies) {
+    const d = _.isString(lumo.dependencies) ? lumo.dependencies : lumo.dependencies.join(',');
+    return `--dependencies ${d}`
+  }
+}
+
+function lumoLocalRepo(lumo) {
+  if(lumo.localRepo) {
+    return `--local-repo ${lumo.localRepo}`;
+  }
+}
+
 function cljsLambdaBuild(serverless, opts) {
-  const fns = slsToCljsLambda(serverless.service.functions, opts);
+  const fns      = slsToCljsLambda(serverless.service.functions, opts);
   const compiler = _.get(serverless.service, 'custom.cljsCompiler');
-  const index = _.get(serverless.service, 'custom.cljsIndex');
+  const index    = _.get(serverless.service, 'custom.cljsIndex');
+  const lumo     = _.get(serverless.service, 'custom.lumo', {});
 
   let cmd;
-  if(compiler == "lumo" || opts.lumo) {
-    cmd = (`lumo -c ${path.resolve(__dirname, 'serverless-cljs-plugin')} ` +
+  if(compiler == "lumo" || opts.lumo || _.some(lumo)) {
+    const args = _.some(lumo) ? _.filter([lumoClasspath(lumo),
+                                          lumoDependencies(lumo),
+                                          lumoLocalRepo(lumo)]) : [];
+    cmd = (`lumo ${args.join(' ')} -c ${path.resolve(__dirname, 'serverless-cljs-plugin')} ` +
            `-m serverless-lumo.build ` +
            `--zip-path ${serverless.service.__cljsArtifact} ` +
            `--functions '${fns}' ` +
