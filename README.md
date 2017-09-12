@@ -40,8 +40,10 @@ In the example above, there needn't be a corresponding entry for `echo` in
 
 ## Lumo
 
-Alternatively you can use the [Lumo](https://github.com/anmonteiro/lumo)
-[compiler](https://anmonteiro.com/2017/02/compiling-clojurescript-projects-without-the-jvm/).
+Alternatively, you can use the [Lumo](https://github.com/anmonteiro/lumo)
+[compiler](https://anmonteiro.com/2017/09/the-state-of-clojurescript-compilation-in-lumo).
+
+Note that `serverless-cljs-plugin` needs _Lumo >= 1.8.0_.
 
 In order to enable it, pass the `--lumo` switch to either `deploy` or `package`:
 

@@ -4,7 +4,7 @@
             [cljs.reader :as reader]
             [lumo.build.api]
             [lumo.classpath :as classpath]
-            [lumo.core]
+            [lumo.core :as lumo]
             [lumo.io :as io]
             [serverless-lumo.index :as index]))
 
@@ -51,9 +51,16 @@
    "Invoking the Lumo compiler w/ inputs"
    (.stringify js/JSON (clj->js inputs)))
   (run! classpath/add! inputs)
-  (lumo.build.api/build
-   (apply lumo.build.api/inputs inputs)
-   compiler-opts))
+
+  (js/Promise.
+   (fn [resolve reject]
+     (lumo.build.api/build
+      (apply lumo.build.api/inputs inputs)
+      compiler-opts
+      (fn [result]
+        (if (:error result)
+          (reject result)
+          (resolve result)))))))
 
 (defn read-conf!
   "Read and return the configuration map."
@@ -69,7 +76,6 @@
   {:source-paths ["src"]
    :compiler     {:output-to     (.format path #js {:dir "out" :base "lambda.js"})
                   :output-dir    "out"
-                  :source-map    false ;; lumo bug
                   :target        :nodejs
                   :optimizations :none}})
 
@@ -94,11 +100,11 @@
       (dump-index! (.resolve path output-dir "../index.js")
                    (:functions opts)
                    compiler))
-    (compile! (:source-paths cljs-lambda-opts) compiler)
-    (zip! (:zip-path opts)
-          {:dirs  #{output-dir "node_modules"}
-           :files #{[index {:name "index.js"}]}}
-          compiler)))
+    (.then (compile! (:source-paths cljs-lambda-opts) compiler)
+           #(zip! (:zip-path opts)
+                  {:dirs  #{output-dir "node_modules"}
+                   :files #{[index {:name "index.js"}]}}
+                  compiler))))
 
 (def cli-option-map
   {:z :zip-path
@@ -134,6 +140,8 @@
 
 (defn ^:export -main [& args]
   (let [opts (cli-options (cmd-line-args))]
-    (build! opts (merge-maps default-config (read-conf!)))))
+    (.then (build! opts (merge-maps default-config (read-conf!)))
+           lumo/exit
+           #(lumo/exit 2))))
 
 (set! *main-cli-fn* -main)
