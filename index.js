@@ -68,7 +68,9 @@ const applyZipExclude = bluebird.coroutine(
 
       oldZip
         .filter((path, file) => !_.some(exclude, pattern => minimatch(path, pattern)))
-        .forEach(entry => newZip.file(entry.name, entry.nodeStream("nodebuffer")));
+        .forEach(entry => newZip.file(entry.name,
+                                      entry.nodeStream("nodebuffer"),
+                                      _.pick(entry, ["unixPermissions", "dosPermissions", "comment", "date"])));
 
       const buffer = yield newZip.generateAsync({
         type:        "nodebuffer",
