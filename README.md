@@ -63,7 +63,7 @@ The source paths and compiler options will be read from the optional file
 {:source-paths ["src"]
  :compiler     {:output-to     "out/lambda.js"
                 :output-dir    "out"
-                :source-map    false ;; lumo bug #132
+                :source-map    false ;; because of a bug in lumo <= 1.8.0
                 :target        :nodejs
                 :optimizations :none}}
 ```
