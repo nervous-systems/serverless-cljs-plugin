@@ -97,7 +97,10 @@ custom:
       classpath:
         - /tmp/
       localRepo: /xyz
+      cache: /cache | none
 ```
+
+_Note_: caching is always on unless you specify "none" in the config.
 
 ## License
 
