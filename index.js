@@ -14,7 +14,7 @@ const exec   = bluebird.promisify(require('child_process').exec,
 
 jszip.external.Promise = bluebird;
 
-const DEFAULT_EXCLUDE = ['node_modules/serverless-cljs-plugin'];
+const DEFAULT_EXCLUDE = ['node_modules/serverless-cljs-plugin/**'];
 
 function destroyFnMap(service) {
   return _.mapValues(
