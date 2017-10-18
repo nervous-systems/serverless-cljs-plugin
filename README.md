@@ -56,51 +56,63 @@ custom:
   cljsCompiler: lumo
 ```
 
-The source paths and compiler options will be read from the optional file
-`serverless-lumo.edn`.  Below are the defaults:
+ -  _Compiler options_
 
-```clojure
-{:source-paths ["src"]
- :compiler     {:output-to     "out/lambda.js"
-                :output-dir    "out"
-                :source-map    false ;; because of a bug in lumo <= 1.8.0
-                :target        :nodejs
-                :optimizations :none}}
-```
+    The source paths and compiler options will be read from the optional file
+    `serverless-lumo.edn`.  Below are the defaults:
 
-If `package` is called with `--index` or the following is added to
-`serverless.yml`:
+    ```clojure
+    {:source-paths ["src"]
+     :compiler     {:output-to     "out/lambda.js"
+                    :output-dir    "out"
+                    :source-map    false ;; because of a bug in lumo <= 1.8.0
+                    :target        :nodejs
+                    :optimizations :none}}
+    ```
 
-```yaml
-custom:
-  cljsIndex: true
-```
+ -  _Lumo Configuration_
 
-A custom `index.js` will be materialized in `:output-dir`'s parent folder. This
-file should be thought as managed by `serverless-cljs-plugin` and can be useful
-for some plugins (e.g.: [`serverless-offline`](https://github.com/dherault/serverless-offline)).
+    As an alternative to `cljsCompiler: lumo`, `cljsCompiler.lumo` may be specified
+    as a map of options.  These options are passed directly to the `lumo` process.
+    Currently supported:
 
-_Note_: with the defaults above `index.js` will be saved, overwriting without
-warning, in the project root (the parent dir of `out`).
+    ```yaml
+    custom:
+      cljsCompiler:
+        lumo:
+          dependencies:
+            - andare:0.7.0
+          classpath:
+            - /tmp/
+          localRepo: /xyz
+          cache: /cache | none
+          index: true | false
+          exitOnWarning: true | false
+    ```
 
-### Configuration
+    _Note_: caching is always on unless you specify "none" in the config.
 
-As an alternative to `cljsCompiler: lumo`, `cljsCompiler.lumo` may be specified
-as a map of options.  Currently supported:
+ -  _The index.js file_
 
-```yml
-custom:
-  cljsCompiler:
-    lumo:
-      dependencies:
-        - andare:0.7.0
-      classpath:
-        - /tmp/
-      localRepo: /xyz
-      cache: /cache | none
-```
+    If `package` is called with `--index` or the following is added to
+    `serverless.yml`:
 
-_Note_: caching is always on unless you specify "none" in the config.
+    A custom `index.js` will be materialized in `:output-dir`'s parent folder. This
+    file should be thought as managed by `serverless-cljs-plugin` and can be useful
+    for some plugins (e.g.:
+    [`serverless-offline`](https://github.com/dherault/serverless-offline)).
+
+    _Note_: with the defaults above `index.js` will be saved, overwriting without
+    warning, in the project root (the parent dir of `out`).
+
+ -  _Exit on compilation warnings_
+
+    Lumo generates warnings such as `WARNING: Use of undeclared Var` to signal
+    failures. You can tune the ones you want to see by using the
+    [`:warnings` compiler option](https://clojurescript.org/reference/compiler-options#warnings)
+    in `serverless-lumo.edn`, but by default the `lumo` process emits the warnings,
+    does not throw and returns `0`. This means that `serverless` will keep going in
+    presence of warnings.
 
 ## License
 

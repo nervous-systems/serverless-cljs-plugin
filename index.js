@@ -116,9 +116,9 @@ function lumoCache(lumo) {
 function cljsLambdaBuild(serverless, opts) {
   const fns      = slsToCljsLambda(serverless.service.functions, opts);
   const compiler = _.get(serverless.service, 'custom.cljsCompiler');
-  const index    = _.get(serverless.service, 'custom.cljsIndex');
   const lumo     = _.get(compiler, 'lumo', {});
   const exitOnWg = _.get(lumo, 'exitOnWarning');
+  const index    = _.get(lumo, 'index');
 
   let cmd;
   if(compiler == "lumo" || opts.lumo ||  _.some(lumo)) {
