@@ -94,16 +94,10 @@ custom:
 
  -  _The index.js file_
 
-    If `package` is called with `--index` or the following is added to
-    `serverless.yml`:
+    The `index` option will materialize a custom `index.js` in `:output-dir`'s parent folder. This
+    file should be thought as managed by `serverless-cljs-plugin` and it is necessary for some plugin (e.g.: [`serverless-offline`](https://github.com/dherault/serverless-offline)) to work properly.
 
-    A custom `index.js` will be materialized in `:output-dir`'s parent folder. This
-    file should be thought as managed by `serverless-cljs-plugin` and can be useful
-    for some plugins (e.g.:
-    [`serverless-offline`](https://github.com/dherault/serverless-offline)).
-
-    _Note_: with the defaults above `index.js` will be saved, overwriting without
-    warning, in the project root (the parent dir of `out`).
+    _Note_: with the default compiler options, `index.js` will be saved in the project root, overwriting without warning.
 
  -  _Exit on compilation warnings_
 
