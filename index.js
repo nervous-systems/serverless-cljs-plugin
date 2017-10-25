@@ -95,7 +95,7 @@ const applyZipExclude = bluebird.coroutine(
   });
 
 function lumoClasspath(lumo) {
-  const cp = path.resolve(__dirname, 'serverless-cljs-plugin');
+  let cp = path.resolve(__dirname, 'serverless-cljs-plugin');
   if(lumo.classpath) {
     cp = _.isString(lumo.classpath) ? `${cp}:${lumo.classpath}` : `${cp}:${lumo.classpath.join(':')}`;
   }
@@ -105,7 +105,7 @@ function lumoClasspath(lumo) {
 function lumoDependencies(lumo) {
   if(lumo.dependencies) {
     const d = _.isString(lumo.dependencies) ? lumo.dependencies : lumo.dependencies.join(',');
-    return `--dependencies ${d}`
+    return `--dependencies ${d}`;
   }
 }
 
@@ -152,7 +152,7 @@ function cljsLambdaBuild(serverless, opts) {
 
   serverless.cli.log(`Executing "${cmd}"`);
   return exec(cmd);
-};
+}
 
 const after_createDeploymentArtifacts = bluebird.coroutine(
   function*(serverless, opts) {
