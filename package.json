@@ -30,7 +30,6 @@
     "api gateway"
   ],
   "dependencies": {
-    "archiver": "2.0.0",
     "bluebird": "3.4.6",
     "jszip": "3.1.4",
     "lodash": "4.17.2",

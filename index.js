@@ -14,18 +14,30 @@ const exec   = bluebird.promisify(require('child_process').exec,
 
 jszip.external.Promise = bluebird;
 
-const DEFAULT_EXCLUDE = ['node_modules/serverless-cljs-plugin/**'];
+const DEFAULT_EXCLUDE = ['node_modules/serverless-cljs-plugin/**', '.lumo_cache/**'];
 
-function destroyFnMap(service) {
+function isLumo(serverless, opts) {
+  const compiler = _.get(serverless.service, 'custom.cljsCompiler');
+  const lumo     = _.get(compiler, 'lumo', {});
+  return (compiler == "lumo" || opts.lumo || _.some(lumo));
+}
+
+function setCljsLambdaFnMap(serverless, opts) {
   return _.mapValues(
-    service.functions,
+    serverless.service.functions,
     fn => {
       if(fn.cljs) {
         fn.handler = `index.${munge.munge(fn.cljs)}`;
-        _.set(fn, 'package.artifact', service.__cljsArtifact);
+        if(!isLumo(serverless, opts)) {
+          _.set(fn, 'package.artifact', serverless.service.__cljsArtifact);
+        }
       }
       return fn;
     });
+}
+
+function setCljsLambdaExclude(serverless) {
+  return _.update(serverless.service, 'package.exclude', v => _.concat(v || [], DEFAULT_EXCLUDE));
 }
 
 function edn(v) {
@@ -58,7 +70,7 @@ const writeFile = bluebird.promisify(fs.writeFile);
 
 const applyZipExclude = bluebird.coroutine(
   function*(serverless, opts) {
-    // TODO respect exclude on individual functions
+    // TODO respect exclude/include on individual functions
     const exclude = _.uniq(_.get(serverless.service.package, "exclude", []));
 
     if (!_.isEmpty(exclude)) {
@@ -83,7 +95,7 @@ const applyZipExclude = bluebird.coroutine(
   });
 
 function lumoClasspath(lumo) {
-  const cp = path.resolve(__dirname, 'serverless-cljs-plugin');
+  let cp = path.resolve(__dirname, 'serverless-cljs-plugin');
   if(lumo.classpath) {
     cp = _.isString(lumo.classpath) ? `${cp}:${lumo.classpath}` : `${cp}:${lumo.classpath.join(':')}`;
   }
@@ -93,7 +105,7 @@ function lumoClasspath(lumo) {
 function lumoDependencies(lumo) {
   if(lumo.dependencies) {
     const d = _.isString(lumo.dependencies) ? lumo.dependencies : lumo.dependencies.join(',');
-    return `--dependencies ${d}`
+    return `--dependencies ${d}`;
   }
 }
 
@@ -121,14 +133,14 @@ function cljsLambdaBuild(serverless, opts) {
   const index    = _.get(lumo, 'index');
 
   let cmd;
-  if(compiler == "lumo" || opts.lumo ||  _.some(lumo)) {
+  if(isLumo(serverless, opts)) {
     const args =  _.filter([lumoClasspath(lumo),
                             lumoDependencies(lumo),
                             lumoLocalRepo(lumo),
                             lumoCache(lumo)]);
     cmd = (`lumo ${args.join(' ')} ` +
            `--main serverless-lumo.build ` +
-           `--zip-path ${serverless.service.__cljsArtifact} ` +
+           `--service-path ${serverless.config.servicePath} ` +
            `--functions '${fns}' ` +
            `--index ${_.defaultTo(opts.index || index, false)} ` +
            `--warning-exit ${_.defaultTo(opts.exitOnWarning || exitOnWg, false)}`);
@@ -140,7 +152,7 @@ function cljsLambdaBuild(serverless, opts) {
 
   serverless.cli.log(`Executing "${cmd}"`);
   return exec(cmd);
-};
+}
 
 const after_createDeploymentArtifacts = bluebird.coroutine(
   function*(serverless, opts) {
@@ -148,7 +160,9 @@ const after_createDeploymentArtifacts = bluebird.coroutine(
 
     yield cljsLambdaBuild(serverless, opts);
 
-    yield applyZipExclude(serverless, opts);
+    if(!isLumo(serverless, opts)) {
+      yield applyZipExclude(serverless, opts);
+    }
 
     serverless.cli.log(`Returning artifact path ${serverless.service.__cljsArtifact}`);
     return serverless.service.__cljsArtifact;
@@ -156,8 +170,6 @@ const after_createDeploymentArtifacts = bluebird.coroutine(
 
 class ServerlessPlugin {
   constructor(serverless, opts) {
-     _.update(
-       serverless.service, 'package.exclude', v => _.concat(v || [], DEFAULT_EXCLUDE));
 
     opts.function = (opts.f || opts.function);
 
@@ -167,14 +179,19 @@ class ServerlessPlugin {
 
     serverless.cli.log(`Targeting ${serverless.service.__cljsArtifact}`);
 
-    destroyFnMap(serverless.service);
+    setCljsLambdaFnMap(serverless, opts);
+    setCljsLambdaExclude(serverless);
 
     const buildAndMerge = after_createDeploymentArtifacts.bind(
       null, serverless, opts);
 
+    const when = isLumo(serverless, opts) ? 'before' : 'after';
+
+    // Using the same hooks as in graphcool/serverless-plugin-typescript:
+    // https://github.com/graphcool/serverless-plugin-typescript/blob/master/src/index.ts#L39
     this.hooks = {
-      'after:deploy:createDeploymentArtifacts': buildAndMerge,
-      'after:deploy:function:packageFunction': buildAndMerge
+      [`${when}:package:createDeploymentArtifacts`]: buildAndMerge,
+      [`${when}:deploy:function:packageFunction`]: buildAndMerge
     };
   }
 }
