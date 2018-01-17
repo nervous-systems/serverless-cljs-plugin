@@ -29,7 +29,7 @@ function setCljsLambdaFnMap(serverless, opts) {
       if(fn.cljs) {
         fn.handler = `index.${munge.munge(fn.cljs)}`;
         if(!isLumo(serverless, opts)) {
-          _.set(fn, 'package.artifact', serverless.service.__cljsArtifact);
+          fn.artifact = serverless.service.__cljsArtifact;
         }
       }
       return fn;
