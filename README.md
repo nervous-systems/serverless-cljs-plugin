@@ -11,6 +11,7 @@ written in [Clojurescript](https://clojurescript.org/).
 
 ``` shell
 $ lein new serverless-cljs example
+example$ lein deps
 ```
 
 Will generate an `example` directory containing a minimal `serverless.yml` and

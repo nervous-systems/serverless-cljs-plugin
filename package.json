@@ -7,7 +7,7 @@
   },
   "author": "Moe Aboulkheir",
   "license": "Unlicense",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "engines": {
     "node": ">=4.0"
   },
