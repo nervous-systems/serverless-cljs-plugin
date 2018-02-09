@@ -34,7 +34,7 @@
   {:source-paths ["src"]
    :compiler     {:output-to     (.format path #js {:dir "out" :base "lambda.js"})
                   :output-dir    "out"
-                  :source-map    false ;; lumo bug
+                  :source-map    true
                   :target        :nodejs
                   :optimizations :none}})
 
